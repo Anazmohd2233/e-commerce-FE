@@ -47,7 +47,7 @@ const Deal = () => {
                       <p>Don`t wait. The time will never be just right.</p>
                     </div>
                   </Fade>
-                  <DealendTimer />
+                  {/* <DealendTimer /> */}
                 </div>
                 <Fade
                   triggerOnce

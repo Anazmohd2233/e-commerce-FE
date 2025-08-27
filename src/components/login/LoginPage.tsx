@@ -213,12 +213,8 @@ const LoginPage = () => {
             </div>
             <div className="gi-login-box d-n-991">
               <div className="gi-login-img">
-                <img
-                  src={
-                    process.env.VITE_APP_URL + "/assets/img/common/login.png"
-                  }
-                  alt="login"
-                />
+              <img src="/assets/img/common/login.png" alt="login" />
+
               </div>
             </div>
           </div>

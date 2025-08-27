@@ -13,7 +13,7 @@ import NewsletterModal from "@/components/model/NewsletterModal";
 const page = () => {
     return (
         <>
-            <NewsletterModal />
+            {/* <NewsletterModal /> */}
             <HeroSlider />
             <CategorySliderOne />
             <Deal />

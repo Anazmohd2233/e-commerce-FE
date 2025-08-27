@@ -108,10 +108,10 @@ const ItemCard = ({ data }: { data: Item }) => {
                 <span className="label veg">
                   <span className="dot"></span>
                 </span>
-                <img className="main-image" src={data.image} alt="Product" loading="lazy" />
+                <img className="main-image" src="/assets/img/product-images/6_1.jpg" alt="Product" loading="lazy" />
                 <img
                   className="hover-image"
-                  src={data.imageTwo}
+                  src="/assets/img/product-images/6_2.jpg"
                   alt="Product"
                   loading="lazy"
                 />

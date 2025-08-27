@@ -1,8 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 // Get base URL from environment variables
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://ecommerce.stokai.live'
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://ecommerce.stokai.live'
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030'
 // Create axios instance with default configuration
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,

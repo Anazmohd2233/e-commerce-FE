@@ -303,15 +303,16 @@ function HeaderManu() {
                       <ul>
                         <li className="dropdown drop-list">
                           <Link to="/" className="dropdown-arrow">
-                            Home<i className="fi-rr-angle-small-right"></i>
+                            Home
+                            {/* <i className="fi-rr-angle-small-right"></i> */}
                           </Link>
-                          <ul className="sub-menu">
+                          {/* <ul className="sub-menu">
                             {home.map((data, index) => (
                               <li key={index}>
                                 <Link to={data.href}>{data.name}</Link>
                               </li>
                             ))}
-                          </ul>
+                          </ul> */}
                         </li>
                         <li className="dropdown drop-list position-static">
                           <Link to="#" className="dropdown-arrow">
