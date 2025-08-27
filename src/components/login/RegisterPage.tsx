@@ -1,109 +1,101 @@
-import { useRef, useState } from "react";
+import { useRef, useState,useEffect } from "react";
 import Breadcrumb from "../breadcrumb/Breadcrumb";
-import { useDispatch } from "react-redux";
 import { Form } from "react-bootstrap";
 import * as formik from "formik";
 import * as yup from "yup";
-import { login } from "@/store/reducers/registrationSlice";
 import { useNavigate } from "react-router-dom";
-import { useCountries } from "@/hooks/useCountries";
-import { City, Country, State } from "@/types/data.types";
-import { useStates } from "@/hooks/useStates";
-import { useCities } from "@/hooks/useCities";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 const RegisterPage = () => {
   const { Formik } = formik;
   const formikRef = useRef<any>(null);
+  const [showOTPInput, setShowOTPInput] = useState(false);
+  const [otpInput, setOtpInput] = useState('');
 
-  // Define Yup validation schema
   const schema = yup.object().shape({
-    firstName: yup.string().required("First name is required"),
-    lastName: yup.string().required("Last name is required"),
+    full_name: yup.string().required("Full name is required"),
     email: yup
       .string()
       .email("Invalid email address")
       .required("Email is required"),
-    phoneNumber: yup
+    mob: yup
       .string()
       .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
       .required("Phone number is required"),
-    password: yup
-      .string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is required"),
-    confirmPassword: yup
-      .string()
-      .required("Confirm password is required")
-      .oneOf([yup.ref("password")], "Passwords must match"),
-    address: yup.string().required("Address is required"),
-    country: yup.string().required("Country is required"),
-    state: yup.string().required("State is required"),
-    city: yup.string().required("City is required"),
-    postCode: yup.string().required("Post code is required"),
+    code: yup.string().required("Country code is required"),
   });
 
   const initialValues = {
-    firstName: "",
-    lastName: "",
+    full_name: "",
     email: "",
-    phoneNumber: "",
-    password: "",
-    confirmPassword: "",
-    address: "",
-    country: "",
-    state: "",
-    city: "",
-    postCode: "",
+    mob: "",
+    code: "91", 
   };
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const [formData, setFormData] = useState<{
-    country: string,
-    state: string,
-    city: string,
-  }>({
-    country: "",
-    state: "",
-    city: ""
-  });
   
-  const filteredCountryData: Country[] = useCountries();
-  const filteredStateData: State[]  = useStates(formData?.country || "");
-  const filteredCityData: City[] = useCities(formData?.state || "");
+  const {
+    signup,
+    verifyUserOTP,
+    loading,
+    error,
+    requiresOTP,
+    otp,
+    token,
+    isAuthenticated,
+    clearAuthError,
+  } = useAuth();
 
-  const handleSelectChange = async (e: any) => {
-    const { value, name } = e.target;
-    setFormData({...formData, [name]: value });
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/'); 
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (requiresOTP && otp) {
+      setShowOTPInput(true);
+      console.log('OTP required. OTP sent:', otp); 
+    }
+  }, [requiresOTP, otp]);
 
   const onSubmit = async (values: any) => {
-    const uniqueId = `${Date.now()}`;
-
-    const newRegistration = { ...values, uid: uniqueId };
-
-    const existingRegistrations = JSON.parse(
-      localStorage.getItem("registrationData") || "[]"
-    );
-
-    if (typeof window !== "undefined") {
-      localStorage.setItem(
-        "registrationData",
-        JSON.stringify([...existingRegistrations, newRegistration])
-      );
-      localStorage.setItem("login_user", JSON.stringify(newRegistration));
-      dispatch(login(newRegistration));
-
-      navigate("/");
+    try {
+      await signup({
+        mob: values.mob,
+        full_name: values.full_name,
+        email: values.email,
+        code: values.code,
+      });
+    } catch (error) {
+      console.error('Signup failed:', error);
     }
+  };
 
-    // Reset form after successful submission
+  const handleOTPVerification = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otpInput.trim() || !token) return;
+    
+    try {
+      await verifyUserOTP({
+        otpKey: token,
+        otp: parseInt(otpInput.trim()),
+      });
+    } catch (error) {
+      console.error('OTP verification failed:', error);
+    }
+  };
+
+  const handleBackToSignup = () => {
+    setShowOTPInput(false);
+    setOtpInput('');
+    clearAuthError();
+    // Reset form
     if (formikRef.current) {
       formikRef.current.resetForm();
     }
-  };  
+  };
 
   return (
     <>
@@ -120,74 +112,64 @@ const RegisterPage = () => {
             <div className="gi-register-wrapper">
               <div className="gi-register-container">
                 <div className="gi-register-form">
-                  <Formik
-                    innerRef={formikRef}
-                    validationSchema={schema}
-                    onSubmit={onSubmit}
-                    initialValues={initialValues}
-                  >
-                    {({
-                      handleSubmit,
-                      handleChange,
-                      values,
-                      errors,
-                    }) => (
-                      <>
+                  {error && (
+                    <div className="alert alert-danger mb-3" role="alert">
+                      {error}
+                    </div>
+                  )}
+
+                  {!showOTPInput ? (
+                    // Signup Form
+                    <Formik
+                      innerRef={formikRef}
+                      validationSchema={schema}
+                      onSubmit={onSubmit}
+                      initialValues={initialValues}
+                    >
+                      {({
+                        handleSubmit,
+                        handleChange,
+                        values,
+                        errors,
+                      }) => (
                         <Form noValidate onSubmit={handleSubmit}>
-                          <span className="gi-register-wrap gi-register-half">
-                            <label htmlFor="firstname">First Name*</label>
+                          <span className="gi-register-wrap">
+                            <label htmlFor="full_name">Full Name*</label>
                             <Form.Group>
                               <Form.Control
                                 type="text"
-                                name="firstName"
-                                placeholder="Enter your first name"
-                                value={values.firstName}
+                                name="full_name"
+                                placeholder="Enter your full name"
+                                value={values.full_name}
                                 onChange={handleChange}
-                                isInvalid={!!errors.firstName}
+                                isInvalid={!!errors.full_name}
                                 required
+                                disabled={loading}
                               />
-                              {errors.firstName &&
-                                typeof errors.firstName === "string" && (
+                              {errors.full_name &&
+                                typeof errors.full_name === "string" && (
                                   <Form.Control.Feedback type="invalid">
-                                    {errors.firstName}
+                                    {errors.full_name}
                                   </Form.Control.Feedback>
                                 )}
                             </Form.Group>
                           </span>
-                          <span className="gi-register-wrap gi-register-half">
-                            <label>Last Name*</label>
-                            <Form.Group>
-                              <Form.Control
-                                type="text"
-                                name="lastName"
-                                placeholder="Enter your last name"
-                                required
-                                value={values.lastName}
-                                onChange={handleChange}
-                                isInvalid={!!errors.lastName}
-                              />
-                              {errors.lastName &&
-                                typeof errors.lastName === "string" && (
-                                  <Form.Control.Feedback type="invalid">
-                                    {errors.lastName}
-                                  </Form.Control.Feedback>
-                                )}
-                            </Form.Group>
-                          </span>
+
                           <span
                             style={{ marginTop: "10px" }}
-                            className="gi-register-wrap gi-register-half"
+                            className="gi-register-wrap"
                           >
                             <label>Email*</label>
                             <Form.Group>
                               <Form.Control
                                 type="email"
                                 name="email"
-                                placeholder="Enter your email add..."
+                                placeholder="Enter your email address"
                                 required
                                 value={values.email}
                                 onChange={handleChange}
                                 isInvalid={!!errors.email}
+                                disabled={loading}
                               />
                               {errors.email &&
                                 typeof errors.email === "string" && (
@@ -197,6 +179,36 @@ const RegisterPage = () => {
                                 )}
                             </Form.Group>
                           </span>
+
+                          <span
+                            style={{ marginTop: "10px" }}
+                            className="gi-register-wrap gi-register-half"
+                          >
+                            <label>Country Code*</label>
+                            <Form.Group>
+                              <Form.Select
+                                name="code"
+                                value={values.code}
+                                onChange={handleChange}
+                                isInvalid={!!errors.code}
+                                required
+                                disabled={loading}
+                              >
+                                <option value="91">+91 (India)</option>
+                                <option value="1">+1 (USA/Canada)</option>
+                                <option value="44">+44 (UK)</option>
+                                <option value="61">+61 (Australia)</option>
+                                {/* Add more country codes as needed */}
+                              </Form.Select>
+                              {errors.code &&
+                                typeof errors.code === "string" && (
+                                  <Form.Control.Feedback type="invalid">
+                                    {errors.code}
+                                  </Form.Control.Feedback>
+                                )}
+                            </Form.Group>
+                          </span>
+
                           <span
                             style={{ marginTop: "10px" }}
                             className="gi-register-wrap gi-register-half"
@@ -205,280 +217,93 @@ const RegisterPage = () => {
                             <Form.Group>
                               <Form.Control
                                 type="text"
-                                name="phoneNumber"
+                                name="mob"
                                 placeholder="Enter your phone number"
-                                pattern="^\d{10,12}$"
+                                pattern="^\d{10}$"
                                 required
-                                value={values.phoneNumber}
+                                value={values.mob}
                                 onChange={handleChange}
-                                isInvalid={!!errors.phoneNumber}
+                                isInvalid={!!errors.mob}
+                                disabled={loading}
                               />
-                              {errors.phoneNumber &&
-                                typeof errors.phoneNumber === "string" && (
+                              {errors.mob &&
+                                typeof errors.mob === "string" && (
                                   <Form.Control.Feedback type="invalid">
-                                    {errors.phoneNumber}
+                                    {errors.mob}
                                   </Form.Control.Feedback>
                                 )}
                             </Form.Group>
-                          </span>
-                          <span
-                            style={{ marginTop: "10px" }}
-                            className="gi-register-wrap gi-register-half"
-                          >
-                            <label>Password*</label>
-                            <Form.Group>
-                              <Form.Control
-                                type="password"
-                                name="password"
-                                placeholder="Enter your password"
-                                pattern="^\d{6,12}$"
-                                required
-                                value={values.password}
-                                onChange={handleChange}
-                                isInvalid={!!errors.password}
-                              />
-                              {errors.password &&
-                                typeof errors.password === "string" && (
-                                  <Form.Control.Feedback type="invalid">
-                                    {errors.password}
-                                  </Form.Control.Feedback>
-                                )}
-                            </Form.Group>
-                          </span>
-                          <span
-                            style={{ marginTop: "10px" }}
-                            className="gi-register-wrap gi-register-half"
-                          >
-                            <label>Conform Password*</label>
-                            <Form.Group>
-                              <Form.Control
-                                type="password"
-                                name="confirmPassword"
-                                placeholder="Enter your Conform password"
-                                pattern="^\d{6,12}$"
-                                required
-                                value={values.confirmPassword}
-                                onChange={handleChange}
-                                isInvalid={!!errors.confirmPassword}
-                              />
-                              {errors.confirmPassword &&
-                                typeof errors.confirmPassword === "string" && (
-                                  <Form.Control.Feedback type="invalid">
-                                    {errors.confirmPassword}
-                                  </Form.Control.Feedback>
-                                )}
-                            </Form.Group>
-                          </span>
-                          <span
-                            style={{ marginTop: "10px" }}
-                            className="gi-register-wrap"
-                          >
-                            <label>Address</label>
-                            <Form.Group>
-                              <Form.Control
-                                type="text"
-                                name="address"
-                                placeholder="Address Line 1"
-                                value={values.address}
-                                onChange={handleChange}
-                                isInvalid={!!errors.address}
-                                required
-                              />
-                              {errors.address &&
-                                typeof errors.address === "string" && (
-                                  <Form.Control.Feedback type="invalid">
-                                    {errors.address}
-                                  </Form.Control.Feedback>
-                                )}
-                            </Form.Group>
-                          </span>
-                          <span
-                            style={{ marginTop: "10px" }}
-                            className="gi-register-wrap gi-register-half"
-                          >
-                            <label>Country *</label>
-                            <Form.Group
-                              className={`gi-rg-select-inner  ${
-                                errors.country ? "is-invalid" : ""
-                              }`}
-                            >
-                              <Form.Select
-                                size="sm"
-                                name="country"
-                                id="gi-select-country"
-                                className="gi-register-select"
-                                value={values.country || ""}
-                                onChange={(e) => {
-                                  handleChange(e);
-                                  handleSelectChange(e);
-                                }}
-                                required
-                                isInvalid={!!errors.country}
-                              >
-                                <option value="" disabled>
-                                  Country
-                                </option>
-                                {filteredCountryData.map(
-                                  (country: Country, index) => (
-                                    <option key={index} value={country.iso2}>
-                                      {country.name}
-                                    </option>
-                                  )
-                                )}
-                              </Form.Select>
-                            </Form.Group>
-                            {errors.country &&
-                              typeof errors.country === "string" && (
-                                <Form.Control.Feedback type="invalid">
-                                  {errors.country}
-                                </Form.Control.Feedback>
-                              )}
                           </span>
 
                           <span
-                            style={{ marginTop: "10px" }}
-                            className="gi-register-wrap gi-register-half"
-                          >
-                            <label>Region State</label>
-                            <Form.Group
-                              className={`gi-rg-select-inner  ${
-                                errors.state ? "is-invalid" : ""
-                              }`}
-                            >
-                              <Form.Select
-                                size="sm"
-                                name="state"
-                                id="gi-select-state"
-                                className="gi-register-select"
-                                value={values.state || ""}
-                                onChange={(e) => {
-                                  handleChange(e);
-                                  handleSelectChange(e);
-                                }}
-                                required
-                                isInvalid={!!errors.state}
-                              >
-                                <option value="" disabled>
-                                  Region/State
-                                </option>
-                                
-                                {filteredStateData && filteredStateData.length == 0 ? (
-                                  <option disabled>Loading...</option>
-                                ) : (
-                                  filteredStateData.map((state: State, index) => (
-                                    <option
-                                      key={index}
-                                      value={state.state_code}
-                                    >
-                                      {state.name}
-                                    </option>
-                                  ))
-                                )}
-                              </Form.Select>
-                            </Form.Group>
-                            {errors.state &&
-                              typeof errors.state === "string" && (
-                                <Form.Control.Feedback type="invalid">
-                                  {errors.state}
-                                </Form.Control.Feedback>
-                              )}
-                          </span>
-
-                          <span
-                            style={{ marginTop: "10px" }}
-                            className="gi-register-wrap gi-register-half"
-                          >
-                            <label>City *</label>
-                            <Form.Group
-                              className={`gi-rg-select-inner  ${
-                                errors.city ? "is-invalid" : ""
-                              }`}
-                            >
-                              <Form.Select
-                                size="sm"
-                                name="city"
-                                id="gi-select-city"
-                                className="gi-register-select"
-                                value={values.city || ""}
-                                onChange={handleChange}
-                                isInvalid={!!errors.city}
-                                required
-                              >
-                                <option value="" disabled>
-                                  City
-                                </option>
-                                {filteredCityData && filteredCityData.length == 0 ? (
-                                  <option disabled>Loading...</option>
-                                ) : (
-                                  filteredCityData.map((city: City, index) => (
-                                    <option key={index} value={city.iso2}>
-                                      {city.name}
-                                    </option>
-                                  ))
-                                )}
-                              </Form.Select>
-                            </Form.Group>
-                            {errors.city && typeof errors.city === "string" && (
-                              <Form.Control.Feedback type="invalid">
-                                {errors.city}
-                              </Form.Control.Feedback>
-                            )}
-                          </span>
-                          <span
-                            style={{ marginTop: "10px" }}
-                            className="gi-register-wrap gi-register-half"
-                          >
-                            <label>Post Code</label>
-                            <Form.Group>
-                              <Form.Control
-                                type="text"
-                                name="postCode"
-                                pattern="^\d{5,6}$"
-                                placeholder="Post Code"
-                                value={values.postCode}
-                                onChange={handleChange}
-                                isInvalid={!!errors.postCode}
-                                required
-                              />
-                              {errors.postCode &&
-                                typeof errors.postCode === "string" && (
-                                  <Form.Control.Feedback type="invalid">
-                                    {errors.postCode}
-                                  </Form.Control.Feedback>
-                                )}
-                            </Form.Group>
-                          </span>
-                          <span className="gi-register-wrap gi-recaptcha">
-                            <span
-                              className="g-recaptcha"
-                              data-sitekey="6LfKURIUAAAAAO50vlwWZkyK_G2ywqE52NU7YO0S"
-                              data-callback="verifyRecaptchaCallback"
-                              data-expired-callback="expiredRecaptchaCallback"
-                            ></span>
-                            <input
-                              className="form-control d-none"
-                              data-recaptcha="true"
-                              required
-                              data-error="Please complete the Captcha"
-                            />
-                            <span className="help-block with-errors"></span>
-                          </span>
-                          <span
-                            style={{ marginTop: "10px" }}
+                            style={{ marginTop: "20px" }}
                             className="gi-register-wrap gi-register-btn"
                           >
                             <span>
                               Already have an account?
-                              <Link to="/login">Login</Link>
+                              <Link to="/login"> Login</Link>
                             </span>
-                            <button className="gi-btn-1" type="submit">
-                              Register
+                            <button 
+                              className="gi-btn-1" 
+                              type="submit"
+                              disabled={loading}
+                            >
+                              {loading ? 'Creating Account...' : 'Register'}
                             </button>
                           </span>
                         </Form>
-                      </>
-                    )}
-                  </Formik>
+                      )}
+                    </Formik>
+                  ) : (
+                    // OTP Verification Form
+                    <form onSubmit={handleOTPVerification}>
+                      <div className="text-center mb-4">
+                        <h4>Verify Your Phone Number</h4>
+                        <p className="text-muted">
+                          We've sent an OTP to your phone number. Please enter it below.
+                        </p>
+                        <p className="text-info">OTP: {otp}</p>
+                      </div>
+
+                      <span className="gi-register-wrap">
+                        <label htmlFor="otp">Enter OTP*</label>
+                        <Form.Group>
+                          <Form.Control
+                            type="number"
+                            id="otp"
+                            value={otpInput}
+                            onChange={(e) => setOtpInput(e.target.value)}
+                            placeholder="Enter the 4-digit OTP"
+                            required
+                            disabled={loading}
+                            className="text-center"
+                            style={{ fontSize: '1.2rem', letterSpacing: '0.5rem' }}
+                          />
+                        </Form.Group>
+                      </span>
+
+                      <span
+                        style={{ marginTop: "20px" }}
+                        className="gi-register-wrap gi-register-btn"
+                      >
+                        <button
+                          type="button"
+                          onClick={handleBackToSignup}
+                          className="gi-btn-2 me-3"
+                          disabled={loading}
+                        >
+                          Back to Signup
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={loading || !otpInput.trim()}
+                          className="gi-btn-1"
+                        >
+                          {loading ? 'Verifying...' : 'Verify OTP'}
+                        </button>
+                      </span>
+                    </form>
+                  )}
                 </div>
               </div>
             </div>

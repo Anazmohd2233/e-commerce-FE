@@ -1,72 +1,87 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Breadcrumb from "../breadcrumb/Breadcrumb";
 import { Container, Form } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import { login } from "@/store/reducers/registrationSlice";
-import { RootState } from "@/store";
-import { showErrorToast, showSuccessToast } from "@/utility/toast";
-
-interface Registration {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  address: string;
-  city: string;
-  postCode: string;
-  country: string;
-  state: string;
-  password: string;
-  uid: any;
-}
+import * as formik from "formik";
+import * as yup from "yup";
+import { useAuth } from "../../hooks/useAuth";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [registrations, setRegistrations] = useState<Registration[]>([]);
-  const [validated, setValidated] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.registration.isAuthenticated
-  );
+  const { Formik } = formik;
+  const formikRef = useRef<any>(null);
+  const [showOTPInput, setShowOTPInput] = useState(false);
+  const [otpInput, setOtpInput] = useState('');
 
-  useEffect(() => {
-    const storedRegistrations = JSON.parse(
-      localStorage.getItem("registrationData") || "[]"
-    );
-    setRegistrations(storedRegistrations);
-  }, []);
+  const schema = yup.object().shape({
+    phone: yup
+      .string()
+      .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
+      .required("Phone number is required"),
+  });
+
+  const initialValues = {
+    phone: "",
+  };
+
+  const navigate = useNavigate();
+  
+  const {
+    login,
+    verifyUserOTP,
+    loading,
+    error,
+    requiresOTP,
+    otp,
+    token,
+    isAuthenticated,
+    clearAuthError,
+  } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/");
+      navigate('/'); 
     }
   }, [isAuthenticated, navigate]);
 
-  const handleLogin = (e: any) => {
+  useEffect(() => {
+    if (requiresOTP && otp) {
+      setShowOTPInput(true);
+      console.log('OTP required. OTP sent:', otp); 
+    }
+  }, [requiresOTP, otp]);
+
+  const onSubmit = async (values: any) => {
+    try {
+      await login({
+        phone: values.phone,
+      });
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  };
+
+  const handleOTPVerification = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const form = e.currentTarget;
-    if (form.checkValidity() === false) {
-      e.stopPropagation();
+    if (!otpInput.trim() || !token) return;
+    
+    try {
+      await verifyUserOTP({
+        otpKey: token,
+        otp: parseInt(otpInput.trim()),
+      });
+    } catch (error) {
+      console.error('OTP verification failed:', error);
     }
+  };
 
-    const foundUser = registrations.find(
-      (user) => user.email === email && user.password === password
-    );
-
-    if (foundUser) {
-      const userData = { uid: foundUser.uid, email, password };
-      localStorage.setItem("login_user", JSON.stringify(userData));
-      dispatch(login(foundUser));
-      showSuccessToast("User Login Success");
-    } else {
-      showErrorToast("Invalid email or password");
+  const handleBackToLogin = () => {
+    setShowOTPInput(false);
+    setOtpInput('');
+    clearAuthError();
+    // Reset form
+    if (formikRef.current) {
+      formikRef.current.resetForm();
     }
-
-    setValidated(true);
   };
 
   return (
@@ -85,70 +100,113 @@ const LoginPage = () => {
               <div className="gi-login-wrapper">
                 <div className="gi-login-container">
                   <div className="gi-login-form">
-                    <Form
-                      noValidate
-                      validated={validated}
-                      action="#"
-                      method="post"
-                    >
-                      <span className="gi-login-wrap">
-                        <label>Email Address*</label>
-                        <Form.Group>
-                          <Form.Control
-                            type="text"
-                            name="name"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email add..."
-                            required
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            Please Enter correct username.
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </span>
+                    {error && (
+                      <div className="alert alert-danger mb-3" role="alert">
+                        {error}
+                      </div>
+                    )}
 
-                      <span
-                        style={{ marginTop: "24px" }}
-                        className="gi-login-wrap"
+                    {!showOTPInput ? (
+                      // Login Form
+                      <Formik
+                        innerRef={formikRef}
+                        validationSchema={schema}
+                        onSubmit={onSubmit}
+                        initialValues={initialValues}
                       >
-                        <label>Password*</label>
-                        <Form.Group>
-                          <Form.Control
-                            type="password"
-                            name="password"
-                            min={6}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
-                            required
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            Password must be at least 6 characters
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </span>
+                        {({
+                          handleSubmit,
+                          handleChange,
+                          values,
+                          errors,
+                        }) => (
+                          <Form noValidate onSubmit={handleSubmit}>
+                            <span className="gi-login-wrap">
+                              <label htmlFor="phone">Phone Number*</label>
+                              <Form.Group>
+                                <Form.Control
+                                  type="text"
+                                  name="phone"
+                                  placeholder="Enter your phone number"
+                                  pattern="^\d{10}$"
+                                  required
+                                  value={values.phone}
+                                  onChange={handleChange}
+                                  isInvalid={!!errors.phone}
+                                  disabled={loading}
+                                />
+                                {errors.phone &&
+                                  typeof errors.phone === "string" && (
+                                    <Form.Control.Feedback type="invalid">
+                                      {errors.phone}
+                                    </Form.Control.Feedback>
+                                  )}
+                              </Form.Group>
+                            </span>
 
-                      <span className="gi-login-wrap gi-login-fp">
-                        <label>
-                          <Link to="/forgot-password">Forgot Password?</Link>
-                        </label>
-                      </span>
-                      <span className="gi-login-wrap gi-login-btn">
-                        <span>
-                          <Link to="/register" className="">
-                            Create Account?
-                          </Link>
+                            <span className="gi-login-wrap gi-login-btn">
+                              <span>
+                                Don't have an account?
+                                <Link to="/register"> Register</Link>
+                              </span>
+                              <button 
+                                className="gi-btn-1" 
+                                type="submit"
+                                disabled={loading}
+                              >
+                                {loading ? 'Sending OTP...' : 'Login'}
+                              </button>
+                            </span>
+                          </Form>
+                        )}
+                      </Formik>
+                    ) : (
+                      // OTP Verification Form
+                      <form onSubmit={handleOTPVerification}>
+                        <div className="text-center mb-4">
+                          <h4>Verify Your Phone Number</h4>
+                          <p className="text-muted">
+                            We've sent an OTP to your phone number. Please enter it below.
+                          </p>
+                          <p className="text-info">OTP: {otp}</p>
+                        </div>
+
+                        <span className="gi-login-wrap">
+                          <label htmlFor="otp">Enter OTP*</label>
+                          <Form.Group>
+                            <Form.Control
+                              type="number"
+                              id="otp"
+                              value={otpInput}
+                              onChange={(e) => setOtpInput(e.target.value)}
+                              placeholder="Enter the 4-digit OTP"
+                              required
+                              disabled={loading}
+                              className="text-center"
+                              style={{ fontSize: '1.2rem', letterSpacing: '0.5rem' }}
+                            />
+                          </Form.Group>
                         </span>
-                        <button
-                          onClick={handleLogin}
-                          className="gi-btn-1 btn"
-                          type="submit"
-                        >
-                          Login
-                        </button>
-                      </span>
-                    </Form>
+
+                        <span className="gi-login-wrap gi-login-btn">
+                          <button
+                            type="button"
+                            onClick={handleBackToLogin}
+                            className="gi-btn-2 me-3"
+                            disabled={loading}
+                          >
+                            Back to Login
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={loading || !otpInput.trim()}
+                            className="gi-btn-1"
+                          >
+                            {loading ? 'Verifying...' : 'Verify OTP'}
+                          </button>
+                        </span>
+                      </form>
+                    )}
                   </div>
                 </div>
               </div>
