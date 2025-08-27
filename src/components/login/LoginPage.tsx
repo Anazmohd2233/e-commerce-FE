@@ -67,7 +67,7 @@ const LoginPage = () => {
     try {
       await verifyUserOTP({
         otpKey: token,
-        otp: parseInt(otpInput.trim()),
+        otp: String(otpInput.trim()),
       });
     } catch (error) {
       console.error('OTP verification failed:', error);
@@ -175,15 +175,15 @@ const LoginPage = () => {
                           <label htmlFor="otp">Enter OTP*</label>
                           <Form.Group>
                             <Form.Control
-                              type="number"
+                              type="text"
                               id="otp"
                               value={otpInput}
                               onChange={(e) => setOtpInput(e.target.value)}
                               placeholder="Enter the 4-digit OTP"
                               required
                               disabled={loading}
-                              className="text-center"
-                              style={{ fontSize: '1.2rem', letterSpacing: '0.5rem' }}
+                        
+                             
                             />
                           </Form.Group>
                         </span>

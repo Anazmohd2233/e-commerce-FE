@@ -12,8 +12,8 @@ export interface LoginData {
 }
 
 export interface OTPVerificationData {
-  otpKey: string;        // OTP keyw
-  otp: number;           // OTP code
+  otpKey: any;        // OTP keyw
+  otp: any;           // OTP code
 }
 
 export interface User {
