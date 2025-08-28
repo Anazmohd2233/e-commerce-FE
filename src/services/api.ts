@@ -57,6 +57,13 @@ export const API_ENDPOINTS = {
   USER_PROFILE: '/user/profile',
   UPDATE_PROFILE: '/user/profile_update',
   
+  // Cart endpoints
+  CART_LIST: '/user/cart/list',
+  ADD_TO_CART: '/user/cart/addToCart',
+  UPDATE_CART: '/user/cart/updateToCart',
+  
+  // Coupon endpoints
+  VALIDATE_COUPON: '/user/coupon/check_valid_coupon',
 };
 
 export default apiClient;
