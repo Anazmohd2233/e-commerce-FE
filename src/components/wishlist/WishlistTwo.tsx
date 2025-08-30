@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addItem } from "../../store/reducers/cartSlice";
+import { useCart } from "../../hooks/useCart";
 import { RootState } from "../../store";
 
 import { removeWishlist } from "@/store/reducers/wishlistSlice";
@@ -21,6 +21,7 @@ const WishlistTwo = () => {
   }, []);
 
   const dispatch = useDispatch();
+  const { addItemToCart } = useCart();
 
   const handleRemoveFromwishlist = (id: number) => {
     dispatch(removeWishlist(id));
@@ -28,7 +29,10 @@ const WishlistTwo = () => {
   };
 
   const handleCart = (data: Item) => {
-    dispatch(addItem(data));
+    addItemToCart({
+      productId: data.id.toString(),
+      quantity: 1
+    });
     showSuccessToast("Add product in Cart Successfully!");
   };
   return (

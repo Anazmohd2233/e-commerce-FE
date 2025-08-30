@@ -1,7 +1,7 @@
 import { RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
 
-import { addItem } from "../../store/reducers/cartSlice";
+import { useCart } from "../../hooks/useCart";
 import { addWishlist, removeWishlist } from "@/store/reducers/wishlistSlice";
 import { addCompare, removeCompareItem } from "@/store/reducers/compareSlice";
 import { useState } from "react";
@@ -27,8 +27,13 @@ const WishlistThree = () => {
     showSuccessToast("Remove product from wishlist!");
   };
 
+  const { addItemToCart } = useCart();
+
   const handleCart = (data: Item) => {
-    dispatch(addItem(data));
+    addItemToCart({
+      productId: data.id.toString(),
+      quantity: 1
+    });
     showSuccessToast("Add product in Cart Successfully!");
   };
 

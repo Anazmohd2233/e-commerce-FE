@@ -80,7 +80,7 @@ const RegisterPage = () => {
     try {
       await verifyUserOTP({
         otpKey: token,
-        otp: parseInt(otpInput.trim()),
+        otp: otpInput.trim(), // Send as string instead of number
       });
     } catch (error) {
       console.error('OTP verification failed:', error);

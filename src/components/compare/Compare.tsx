@@ -1,17 +1,24 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import StarRating from "../stars/StarRating";
-import { addItem } from "../../store/reducers/cartSlice";
+import { useCart } from "../../hooks/useCart";
 import { addWishlist } from "@/store/reducers/wishlistSlice";
 import { removeCompareItem } from "@/store/reducers/compareSlice";
 import { Item } from "@/types/data.types";
+import { showSuccessToast } from "@/utility/toast";
 
 const Compare = () => {
   const CompareItem = useSelector((state: RootState) => state.compare.compare);
   const dispatch = useDispatch();
 
+  const { addItemToCart } = useCart();
+
   const handleCart = (data: Item) => {
-    dispatch(addItem(data));
+    addItemToCart({
+      productId: data.id.toString(),
+      quantity: 1
+    });
+    showSuccessToast("Add product in Cart Successfully!");
   };
 
   const handleRemoveCompareItem = (data: any) => {

@@ -2,11 +2,6 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import StarRating from "../stars/StarRating";
 import QuickViewModal from "../model/QuickViewModal";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addItem,
-  setItems,
-  updateItemQuantity,
-} from "../../store/reducers/cartSlice";
 import { Link } from "react-router-dom";
 
 import { RootState } from "@/store";
@@ -14,46 +9,45 @@ import { addWishlist, removeWishlist } from "@/store/reducers/wishlistSlice";
 import { addCompare, removeCompareItem } from "@/store/reducers/compareSlice";
 import { showSuccessToast } from "@/utility/toast";
 import { Item } from "@/types/data.types";
+import { useCart } from "../../hooks/useCart";
 
 const ItemCard = ({ data }: { data: Item }) => {
   const [show, setShow] = useState(false);
   const dispatch = useDispatch();
   const compareItems = useSelector((state: RootState) => state.compare.compare);
   const wishlistItems = useSelector((state: RootState) => state.wishlist.wishlist);
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const { cartItems, addItemToCart, updateItem, isProductInCart, getCartItem, getCart } = useCart();
 
-  // Load cart items from localStorage only once on mount
+  // Load cart items from API on mount
   useEffect(() => {
-    const itemsFromLocalStorage =
-      typeof window !== "undefined"
-        ? JSON.parse(localStorage.getItem("products") || "[]")
-        : [];
-    if (itemsFromLocalStorage.length) {
-      dispatch(setItems(itemsFromLocalStorage));
-    }
-  }, [dispatch]);
+    getCart(1);
+  }, [getCart]);
 
   // Memoize callbacks
   const handleCart = useCallback((data: Item) => {
-    const isItemInCart = cartItems.some((item: Item) => item.id === data.id);
+    const productInCart = isProductInCart(data.id.toString());
 
-    if (!isItemInCart) {
-      dispatch(addItem({ ...data, quantity: 1 }));
+    if (!productInCart) {
+      // Add new item to cart
+      addItemToCart({
+        productId: data.id.toString(),
+        quantity: 1,
+        productVariantId: data.variantId || undefined
+      });
       showSuccessToast("Add product in Cart Successfully!");
     } else {
-      const updatedCartItems = cartItems.map((item: Item) =>
-        item.id === data.id
-          ? {
-              ...item,
-              quantity: item.quantity + 1,
-              price: item.newPrice + data.newPrice,
-            } // Increment quantity and update price
-          : item
-      );
-      dispatch(updateItemQuantity(updatedCartItems));
-      showSuccessToast("Add product in Cart Successfully!");
+      // Update existing item quantity
+      const existingItem = getCartItem(data.id.toString());
+      if (existingItem) {
+        updateItem({
+          itemId: existingItem.id,
+          quantity: existingItem.quantity + 1,
+          productVariantId: existingItem.productVariant?.id
+        });
+        showSuccessToast("Updated product quantity in Cart!");
+      }
     }
-  }, [cartItems, dispatch]);
+  }, [isProductInCart, addItemToCart, updateItem, getCartItem]);
 
   // Memoize computed values
   const isInWishlist = useMemo(() => 

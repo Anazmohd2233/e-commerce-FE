@@ -1,32 +1,30 @@
-import { useDispatch, useSelector } from "react-redux";
-import { addItem, updateItemQuantity } from "../../../store/reducers/cartSlice";
 import { showSuccessToast } from "@/utility/toast";
-import { RootState } from "@/store";
 import { Item } from "@/types/data.types";
 import { Link } from "react-router-dom";
+import { useCart } from "@/hooks/useCart";
 
 const TrendingItem = ({ data }: { data: Item}) => {
-  const cartItems = useSelector((state: RootState) => state.cart.items);
-  const dispatch = useDispatch();
+  const { addItemToCart, updateItem, isProductInCart, getCartItem } = useCart();
 
-  const handleCart = (data: Item) => {
-    const isItemInCart = cartItems.some((item: Item) => item.id === data.id);
-
-    if (!isItemInCart) {
-      dispatch(addItem({ ...data, quantity: 1 }));
-      showSuccessToast("Add product in Cart Successfully!");
-    } else {
-      const updatedCartItems = cartItems.map((item: Item) =>
-        item.id === data.id
-          ? {
-              ...item,
-              quantity: item.quantity + 1,
-              price: item.newPrice + data.newPrice,
-            } // Increment quantity and update price
-          : item
-      );
-      dispatch(updateItemQuantity(updatedCartItems));
-      showSuccessToast("Add product in Cart Successfully!");
+  const handleCart = async (product: Item) => {
+    try {
+      const isInCart = isProductInCart(product.id.toString());
+      
+      if (isInCart) {
+        const cartItem = getCartItem(product.id.toString());
+        await updateItem({
+          productId: product.id.toString(),
+          quantity: (cartItem?.quantity || 0) + 1
+        });
+      } else {
+        await addItemToCart({
+          productId: product.id.toString(),
+          quantity: 1
+        });
+      }
+      showSuccessToast("Product added to cart successfully!");
+    } catch (error) {
+      console.error("Error updating cart:", error);
     }
   };
 

@@ -3,7 +3,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import ItemCard from "../product-item/ItemCard";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
-import { addItem } from "../../store/reducers/cartSlice";
 import { Fade } from "react-awesome-reveal";
 import { Col, Row } from "react-bootstrap";
 import Spinner from "../button/Spinner";
@@ -11,6 +10,7 @@ import { removeWishlist } from "@/store/reducers/wishlistSlice";
 import { useSliceData } from "@/hooks/useSliceData";
 import { Item } from "@/types/data.types";
 import { showSuccessToast } from "@/utility/toast";
+import { useCart } from "../../hooks/useCart";
 
 const Wishlist = () => {
   const wishlistItems = useSelector(
@@ -25,6 +25,7 @@ const Wishlist = () => {
   }, []);
 
   const dispatch = useDispatch();
+  const { addItemToCart } = useCart();
 
   const handleRemoveFromwishlist = (id: number) => {
     dispatch(removeWishlist(id));
@@ -32,7 +33,10 @@ const Wishlist = () => {
   };
 
   const handleCart = (data: Item) => {
-    dispatch(addItem(data));
+    addItemToCart({
+      productId: data.id.toString(),
+      quantity: 1
+    });
     showSuccessToast("Add product in Cart Successfully!");
   };
 

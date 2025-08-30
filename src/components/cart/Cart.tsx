@@ -1,9 +1,9 @@
+
 import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import ItemCard from "../product-item/ItemCard";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../store";
-import { removeItem } from "../../store/reducers/cartSlice";
 import { Fade } from "react-awesome-reveal";
 import Spinner from "../button/Spinner";
 import DiscountCoupon from "../discount-coupon/DiscountCoupon";
@@ -13,10 +13,10 @@ import { City, Country, State } from "@/types/data.types";
 import { useCountries } from "@/hooks/useCountries";
 import { useStates } from "@/hooks/useStates";
 import { useCities } from "@/hooks/useCities";
+import { useCart } from "../../hooks/useCart";
 
 const Cart = () => {
-  const cartItems = useSelector((state: RootState) => state.cart.items);
-  const dispatch = useDispatch();
+  const { cartItems, removeItem, getCart } = useCart();
   const [subTotal, setSubTotal] = useState(0);
   const [vat, setVat] = useState(0);
   const [discount, setDiscount] = useState(0);
@@ -34,6 +34,11 @@ const Cart = () => {
   const filteredStateData: State[]  = useStates(formData?.country || "");
   const filteredCityData: City[] = useCities(formData?.state || "");
 
+  // Load cart items from API on mount
+  useEffect(() => {
+    getCart(1);
+  }, [getCart]);
+
   const handleInputChange = async (e: any) => {
     const { name, value } = e.target;
     console.log("{ name, value }", { name, value })
@@ -48,7 +53,7 @@ const Cart = () => {
     }
 
     const subtotal = cartItems.reduce(
-      (acc, item) => acc + item.newPrice * item.quantity,
+      (acc: number, item: any) => acc + parseFloat(item.subTotal || 0),
       0
     );
     setSubTotal(subtotal);
@@ -65,7 +70,7 @@ const Cart = () => {
   const total = subTotal + vat - discountAmount;
 
   const handleRemoveFromCart = (item: any) => {
-    dispatch(removeItem(item.id));
+    removeItem(item.id);
   };
 
   const { data, error } = useSelector((state: RootState) => state.deal);

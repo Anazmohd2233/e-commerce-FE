@@ -1,16 +1,19 @@
-import { useDispatch } from "react-redux";
-import { updateQuantity } from "../../store/reducers/cartSlice";
+import { useCart } from "../../hooks/useCart";
 
 const QuantitySelector = ({
   id,
   quantity,
   setQuantity,
+  itemId,
+  productVariantId,
 }: {
   id: number;
   quantity: number;
   setQuantity?: any;
+  itemId?: string;
+  productVariantId?: string;
 }) => {
-  const dispatch = useDispatch();
+  const { updateItem } = useCart();
 
   const handleQuantityChange = (operation: "increase" | "decrease") => {
     let newQuantity = quantity;
@@ -23,8 +26,13 @@ const QuantitySelector = ({
 
     if (undefined !== setQuantity) {
       setQuantity(newQuantity);
-    } else {
-      dispatch(updateQuantity({ id, quantity: newQuantity }));
+    } else if (itemId) {
+      // Use new cart system to update item quantity
+      updateItem({
+        itemId,
+        quantity: newQuantity,
+        productVariantId,
+      });
     }
   };
 

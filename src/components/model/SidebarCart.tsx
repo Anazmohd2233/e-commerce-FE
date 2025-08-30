@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store";
-import { removeItem } from "../../store/reducers/cartSlice";
 import { Link } from "react-router-dom";
+import { useCart } from "../../hooks/useCart";
 import QuantitySelector from "../quantity-selector/QuantitySelector";
 
 const SidebarCart = ({ closeCart, isCartOpen }: any) => {
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const { cartItems, removeItem, getCart } = useCart();
   const [subTotal, setSubTotal] = useState(0);
   const [vat, setVat] = useState(0);
-  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Fetch cart when component mounts
+    getCart(1);
+  }, [getCart]);
 
   useEffect(() => {
     if (cartItems.length === 0) {
@@ -19,7 +21,7 @@ const SidebarCart = ({ closeCart, isCartOpen }: any) => {
     }
 
     const subtotal = cartItems.reduce(
-      (acc, item) => acc + item.newPrice * item.quantity,
+      (acc: number, item: any) => acc + parseFloat(item.subTotal || 0),
       0
     );
     setSubTotal(subtotal);
@@ -34,7 +36,7 @@ const SidebarCart = ({ closeCart, isCartOpen }: any) => {
   };
 
   const handleRemoveFromCart = (item: any) => {
-    dispatch(removeItem(item.id));
+    removeItem(item.id);
   };
 
   return (
@@ -71,20 +73,22 @@ const SidebarCart = ({ closeCart, isCartOpen }: any) => {
                       to="/"
                       className="gi-pro-img"
                     >
-                      <img src={item.image} alt="product" />
+                      <img src={item.product?.image || '/default-product.jpg'} alt="product" />
                     </Link>
                     <div className="gi-pro-content">
                       <Link to="/" className="cart-pro-title">
-                        {item.title}
+                        {item.product?.product_name || 'Product'}
                       </Link>
                       <span className="cart-price">
-                        {item.waight}{" "}
-                        <span>${item.newPrice * item.quantity}.00</span>
+                        {item.quantity} x ${item.unitPrice}{" "}
+                        <span>${item.subTotal}</span>
                       </span>
                       <div className="qty-plus-minus gi-qty-rtl">
                         <QuantitySelector
-                          id={item.id}
+                          id={parseInt(item.id)}
                           quantity={item.quantity}
+                          itemId={item.id}
+                          productVariantId={item.productVariant?.id}
                         />
                       </div>
                       <a

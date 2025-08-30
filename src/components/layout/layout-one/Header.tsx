@@ -3,12 +3,29 @@ import HeaderOne from "./header/HeaderOne";
 import HeaderTwo from "./header/HeaderTwo";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import { useCart } from "@/hooks/useCart";
+import { useEffect, useState } from "react";
 
 function Header() {
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const { getCart } = useCart();
+  const [cartItems, setCartItems] = useState([]);
   const wishlistItems = useSelector(
     (state: RootState) => state.wishlist.wishlist
-  );
+  ) || [];
+
+  useEffect(() => {
+    const loadCart = async () => {
+      try {
+        const items = await getCart();
+        setCartItems(Array.isArray(items) ? items : []);
+      } catch (error) {
+        console.error("Error loading cart:", error);
+        setCartItems([]);
+      }
+    };
+    loadCart();
+  }, [getCart]);
+
   return (
     <>
       {/* <Loader /> */}
