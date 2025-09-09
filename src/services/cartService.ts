@@ -26,7 +26,7 @@ export const cartService = {
       if (!response.data.success) {
         throw new Error(response.data.message || 'Failed to fetch cart');
       }
-
+console.log('response.data.data cart',response.data.data)
       return response.data.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || error.message || 'Failed to fetch cart');

@@ -118,7 +118,7 @@ const Header = () => {
                     <!-- Header Top Message Start --> */}
               <div className="col text-center header-top-center">
                 <div className="header-top-message">
-                  World&apos;s Fastest Online Shopping Destination
+                  World&apos;s Fastest Online3 Shopping Destination
                 </div>
               </div>
               {/* <!-- Header Top Message End -->

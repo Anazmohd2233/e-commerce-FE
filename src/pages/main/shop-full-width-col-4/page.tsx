@@ -8,8 +8,8 @@ const page = () => {
     <>
 
 
-      <Breadcrumb title={"Shop Page"} />
-      <CategorySliderOne />
+      {/* <Breadcrumb title={"Shop Page"} /> */}
+      {/* <CategorySliderOne /> */}
       <FullWidth xl={3} lg={12} />
 
     </>

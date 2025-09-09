@@ -58,7 +58,9 @@ export const API_ENDPOINTS = {
   UPDATE_PROFILE: '/user/profile_update',
 
     // CATEGORY endpoints
-  GET_CATEGORY: '/category/list/',
+  GET_CATEGORY: '/user/category/list',
+    GET_SUB_CATEGORY: '/user/sub_category/list',
+
   
   // Cart endpoints
   CART_LIST: '/user/cart/list',

@@ -1,4 +1,4 @@
-
+//This is the real header
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import SidebarCart from "@/components/model/SidebarCart";
@@ -43,13 +43,13 @@ function HeaderOne({ cartItems, wishlistItems }: any) {
                     <Link to="/">
                       <i className="fi fi-rr-phone-call"></i>
                     </Link>
-                    +91 987 654 3210
+                    +91 8589 9680 81
                   </li>
                   <li className="list-inline-item">
                     <Link to="/">
                       <i className="fi fi-brands-whatsapp"></i>
                     </Link>
-                    +91 987 654 3210
+                    +91 8589 9680 81
                   </li>
                 </ul>
               </div>
@@ -58,7 +58,7 @@ function HeaderOne({ cartItems, wishlistItems }: any) {
                         <!-- Header Top Message Start --> */}
             <div className="col text-center header-top-center">
               <div className="header-top-message">
-                World`s Fastest Online Shopping Destination
+                World`s Fastest Online1 Shopping Destination
               </div>
             </div>
             {/* <!-- Header Top Message End -->
@@ -68,9 +68,9 @@ function HeaderOne({ cartItems, wishlistItems }: any) {
                 <Link className="gi-help" to="/faq">
                   Help?
                 </Link>
-                <Link className="gi-help" to="/track-order">
+                {/* <Link className="gi-help" to="/track-order">
                   Track Order?
-                </Link>
+                </Link> */}
                 {/* <!-- Language Start --> */}
                 <Dropdown className="header-top-lan-curr header-top-lan">
                   <Dropdown.Toggle
@@ -89,7 +89,7 @@ function HeaderOne({ cartItems, wishlistItems }: any) {
                     <Dropdown.Item as="li" className="active">
                       English
                     </Dropdown.Item>
-                    <Dropdown.Item as="li">Italiano</Dropdown.Item>
+                    {/* <Dropdown.Item as="li">Italiano</Dropdown.Item> */}
                   </Dropdown.Menu>
                 </Dropdown>
 
@@ -112,9 +112,9 @@ function HeaderOne({ cartItems, wishlistItems }: any) {
                     <Dropdown.Item as="li" className="dropdown-item active">
                       USD $
                     </Dropdown.Item>
-                    <Dropdown.Item as="li" className="dropdown-item">
+                    {/* <Dropdown.Item as="li" className="dropdown-item">
                       EUR €
-                    </Dropdown.Item>
+                    </Dropdown.Item> */}
                   </Dropdown.Menu>
                 </Dropdown>
                 {/* <!-- Currency End --> */}

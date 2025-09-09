@@ -17,7 +17,6 @@ import { persistedFashiondealReducer } from "./reducers/fashiondealSlice";
 import { persistedQuestionstwoReducer } from "./reducers/questionstwoSlice";
 import { persistedQuestionsReducer } from "./reducers/questionsSlice";
 import { persistedCategorysliderthreeReducer } from "./reducers/categorysliderthreeSlice";
-import { persistedCategoryslideroneReducer } from "./reducers/categorySlice";
 import { persistedPolicytwoReducer } from "./reducers/policytwoSlice";
 import { persistedSellingReducer } from "./reducers/sellingSlice";
 import { persistedPolicyReducer } from "./reducers/policySlice";
@@ -63,10 +62,12 @@ import { persistedFashiontwoaccessoriesReducer } from "./reducers/fashiontwoacce
 import { persistedTermtwoReducer } from "./reducers/termtwoSlice";
 import { persistedCategorydealReducer } from "./reducers/categorydealSlice";
 import { persistedCategoryslidertwoReducer } from "./reducers/categorysliderSlice";
+import { persistedCategoryReducer } from "./reducers/categorySlice";
 
 // Combine reducers
 const rootReducer = combineReducers({
   cart: persistedCartReducer,
+  categories: persistedCategoryReducer,
   registration: persistedRegistrationReducer,
   wishlist: persistedWishlistReducer,
   compare: persistedCompareReducer,
@@ -93,7 +94,6 @@ const rootReducer = combineReducers({
   policy: persistedPolicyReducer,
   selling: persistedSellingReducer,
   policytwo: persistedPolicytwoReducer,
-  categorysliderone: persistedCategoryslideroneReducer,
   categorysliderthree: persistedCategorysliderthreeReducer,
   questions: persistedQuestionsReducer,
   questionstwo: persistedQuestionstwoReducer,
