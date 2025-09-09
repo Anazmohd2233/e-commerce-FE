@@ -8,15 +8,32 @@ import { RootState } from "@/store";
 import { addWishlist, removeWishlist } from "@/store/reducers/wishlistSlice";
 import { addCompare, removeCompareItem } from "@/store/reducers/compareSlice";
 import { showSuccessToast } from "@/utility/toast";
-import { Item } from "@/types/data.types";
 import { useCart } from "../../hooks/useCart";
+import { useProducts } from "@/hooks/useProducts";
 
-const ItemCard = ({ data }: { data: Item }) => {
+const ItemCard = ({ data }: { data: any }) => {
   const [show, setShow] = useState(false);
   const dispatch = useDispatch();
   const compareItems = useSelector((state: RootState) => state.compare.compare);
   const wishlistItems = useSelector((state: RootState) => state.wishlist.wishlist);
   const { cartItems, addItemToCart, updateItem, isProductInCart, getCartItem, getCart } = useCart();
+
+
+    // const {
+    //   categories,
+    //   subCategories,
+    //   get,
+    //   getProductsList,
+    //   getProductsView,
+    //   loading,
+    // } = useProducts();
+  
+    // useEffect(() => {
+    //     console.log("Dispatching fetchCategories & fetchSubCategories...");
+  
+    //   getCategories(1);
+    //   getSubCategories(1);
+    // }, [getCategories, getSubCategories]);
 
   // Load cart items from API on mount
   useEffect(() => {
@@ -24,7 +41,7 @@ const ItemCard = ({ data }: { data: Item }) => {
   }, [getCart]);
 
   // Memoize callbacks
-  const handleCart = useCallback((data: Item) => {
+  const handleCart = useCallback((data: any) => {
     const productInCart = isProductInCart(data.id.toString());
 
     if (!productInCart) {
@@ -32,7 +49,7 @@ const ItemCard = ({ data }: { data: Item }) => {
       addItemToCart({
         productId: data.id.toString(),
         quantity: 1,
-        productVariantId: data.variantId || undefined
+        productVariantId: data?.variantId || undefined
       });
       showSuccessToast("Add product in Cart Successfully!");
     } else {
@@ -51,11 +68,11 @@ const ItemCard = ({ data }: { data: Item }) => {
 
   // Memoize computed values
   const isInWishlist = useMemo(() => 
-    wishlistItems.some((item: Item) => item.id === data.id),
+    wishlistItems.some((item: any) => item.id === data.id),
     [wishlistItems, data.id]
   );
 
-  const handleWishlist = useCallback((data: Item) => {
+  const handleWishlist = useCallback((data: any) => {
     if (!isInWishlist) {
       dispatch(addWishlist(data));
       showSuccessToast("Add product in Wishlist Successfully!", {
@@ -70,12 +87,12 @@ const ItemCard = ({ data }: { data: Item }) => {
   }, [isInWishlist, dispatch]);
 
   const isInCompare = useMemo(() => 
-    compareItems.some((item: Item) => item.id === data.id),
+    compareItems.some((item: any) => item.id === data.id),
     [compareItems, data.id]
   );
 
 
-  const handleCompareItem = useCallback((data: Item) => {
+  const handleCompareItem = useCallback((data: any) => {
     if (!isInCompare) {
       dispatch(addCompare(data));
       showSuccessToast(`Add product in Compare list Successfully!`, {
@@ -110,22 +127,22 @@ const ItemCard = ({ data }: { data: Item }) => {
                   loading="lazy"
                 />
               </Link>
-              <span className="flags">
+              {/* <span className="flags">
                 {data.sale && (
                   <span className={data.sale === "Sale" ? "sale" : "new"}>
                     {data.sale}
                   </span>
                 )}
-              </span>
+              </span> */}
               <div className="gi-pro-actions">
-                <button
+                {/* <button
                   onClick={() => handleWishlist(data)}
                   className={`gi-btn-group wishlist ${isInWishlist ? "active" : ""}`}
                   title="Wishlist"
                 >
                   <i className="fi-rr-heart"></i>
-                </button>
-                <button
+                </button> */}
+                {/* <button
                   className="gi-btn-group quickview gi-cart-toggle"
                   data-link-action="quickview"
                   title="Quick view"
@@ -134,14 +151,14 @@ const ItemCard = ({ data }: { data: Item }) => {
                   onClick={handleShow}
                 >
                   <i className="fi-rr-eye"></i>
-                </button>
-                <button
+                </button> */}
+                {/* <button
                   onClick={() => handleCompareItem(data)}
                   className={`gi-btn-group compare ${isInCompare ? "active" : ""}`}
                   title="Compare"
                 >
                   <i className="fi fi-rr-arrows-repeat"></i>
-                </button>
+                </button> */}
                 <button
                   title="Add To Cart"
                   className="gi-btn-group add-to-cart"
@@ -189,10 +206,10 @@ const ItemCard = ({ data }: { data: Item }) => {
           </div>
           <div className="gi-pro-content">
             <Link to="/shop-left-sidebar-col-3">
-              <h6 className="gi-pro-stitle">{data.category}</h6>
+              <h6 className="gi-pro-stitle">category</h6>
             </Link>
             <h5 className="gi-pro-title">
-              <Link to="/product-left-sidebar">{data.title}</Link>
+              <Link to="/product-left-sidebar">anas</Link>
             </h5>
             <p className="gi-info">
               Contrary to popular belief, Lorem Ipsum is not simply random text.

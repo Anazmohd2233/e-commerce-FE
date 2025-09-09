@@ -14,8 +14,8 @@ const page = () => {
     return (
         <>
             {/* <NewsletterModal /> */}
-            <HeroSlider />
-            <CategorySliderOne />
+            {/* <HeroSlider /> */}
+            {/* <CategorySliderOne /> */}
             <Deal />
             <Banner />
             <GroceryArrials />

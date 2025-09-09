@@ -624,10 +624,10 @@ export const mainRoutes: LayoutRouteConfig = {
     },
 
     {
-      path: "/shop-full-width-col-4",
+      path: "/products",
       element: <ShopFullWidthCol4 />,
       meta: {
-        title: "shop-full-width-col-4",
+        title: "products",
         requiresAuth: false,
       },
     },

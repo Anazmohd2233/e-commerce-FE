@@ -92,7 +92,7 @@ const fruits: ProductItem[] = [
     status: "Available",
   },
   {
-    title: "Fresh Organic Ginger Pack",
+    title: "Fresh Organic Ginger Packgmhgm",
     sale: "",
     image: process.env.VITE_APP_URL + "/assets/img/product-images/26_1.jpg",
     imageTwo: process.env.VITE_APP_URL + "/assets/img/product-images/26_1.jpg",

@@ -63,11 +63,13 @@ import { persistedTermtwoReducer } from "./reducers/termtwoSlice";
 import { persistedCategorydealReducer } from "./reducers/categorydealSlice";
 import { persistedCategoryslidertwoReducer } from "./reducers/categorysliderSlice";
 import { persistedCategoryReducer } from "./reducers/categorySlice";
+import { persistedProductsReducer } from "./reducers/productSlice";
 
 // Combine reducers
 const rootReducer = combineReducers({
   cart: persistedCartReducer,
   categories: persistedCategoryReducer,
+  products: persistedProductsReducer,
   registration: persistedRegistrationReducer,
   wishlist: persistedWishlistReducer,
   compare: persistedCompareReducer,

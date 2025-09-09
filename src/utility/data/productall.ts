@@ -128,7 +128,7 @@ const productall: ProductItem[] = [
     status: "Out Of Stock",
   },
   {
-    title: "Fresh Organic Ginger Pack",
+    title: "Fresh Organic Ginger Packkkk",
     sale: "",
 
     image: process.env.VITE_APP_URL + "/assets/img/product-images/17_1.jpg",

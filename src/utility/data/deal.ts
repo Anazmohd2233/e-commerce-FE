@@ -129,7 +129,7 @@ const deal: Deal[] = [
     status: "Available",
   },
   {
-    title: "Fresh Organic Ginger Pack",
+    title: "Fresh Organic Ginger Packghmgh",
     sale: "",
     image:  "/assets/img/product-images/17_1.jpg",
     imageTwo:

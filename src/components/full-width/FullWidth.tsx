@@ -136,7 +136,7 @@ const FullWidth = ({
                 </button>
               </div>
             </div>
-            <div className="col-md-6 gi-sort-select">
+            {/* <div className="col-md-6 gi-sort-select">
               <div className="gi-select-inner">
                 <select
                   name="gi-select"
@@ -154,7 +154,7 @@ const FullWidth = ({
                   <option value="6">Price, high to low</option>
                 </select>
               </div>
-            </div>
+            </div> */}
           </div>
           {/* <!-- Shop Top End --> */}
 

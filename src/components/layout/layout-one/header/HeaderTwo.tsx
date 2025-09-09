@@ -29,7 +29,7 @@ function HeaderTwo({ cartItems, wishlistItems }: any) {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     dispatch(setSearchTerm(searchInput));
-    navigate("/shop-full-width-col-4");
+    navigate("/products");
   };
 
   const openCart = () => {

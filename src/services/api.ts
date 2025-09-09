@@ -61,6 +61,10 @@ export const API_ENDPOINTS = {
   GET_CATEGORY: '/user/category/list',
     GET_SUB_CATEGORY: '/user/sub_category/list',
 
+     PRODUCT_LIST: '/user/products/list',
+          PRODUCT_VIEW: '/user/products/viewProduct?id&variantId=25',
+
+
   
   // Cart endpoints
   CART_LIST: '/user/cart/list',

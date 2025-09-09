@@ -11,10 +11,9 @@ export const fetchCategories = createAsyncThunk(
     try {
       const response = await categoryService.getCategoryList(page);
 
-      console.log("response.data from category slice", response.data.category)
       return response.data.category; // ✅ returns array
     } catch (error: any) {
-            console.error("❌ fetchCategories error", error);
+      console.error("❌ fetch Categories error", error);
 
       return rejectWithValue(error.message);
     }
@@ -28,11 +27,10 @@ export const fetchSubCategories = createAsyncThunk(
     try {
       const response = await categoryService.getSubCategoryList(page);
       // response looks like { success, message, instance, data: { items, total, limit } }
-            console.log("response.data from category slice -- sub cat",response.data.items)
 
       return response.data.items; // ✅ use data.items
     } catch (error: any) {
-            console.error("❌ fetch sub Categories error", error);
+      console.error("❌ fetch sub Categories error", error);
 
       return rejectWithValue(error.message);
     }
@@ -61,8 +59,7 @@ const categorySlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-   
-   
+
     clearCategory: (state) => {
       state.categories = null;
       state.error = null;
@@ -83,7 +80,7 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // Add to cart cases
       .addCase(fetchSubCategories.pending, (state) => {
         state.loading = true;
@@ -96,13 +93,7 @@ const categorySlice = createSlice({
       .addCase(fetchSubCategories.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      })
-      
- 
-      
-  
-      
-   
+      });
   },
 });
 
@@ -110,6 +101,9 @@ export const { clearError, clearCategory } = categorySlice.actions;
 
 export const persistConfigCategories = { key: "categories", storage };
 
-export const persistedCategoryReducer = persistReducer(persistConfigCategories, categorySlice.reducer);
+export const persistedCategoryReducer = persistReducer(
+  persistConfigCategories,
+  categorySlice.reducer
+);
 
 export default categorySlice.reducer;

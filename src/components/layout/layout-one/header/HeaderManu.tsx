@@ -187,7 +187,7 @@ function HeaderManu() {
                           </ul>
                         </li> */}
                         <li className="dropdown drop-list">
-                          <Link to="shop-full-width-col-4" className="dropdown-arrow">
+                          <Link to="products" className="dropdown-arrow">
                             Products
                           </Link>
                           {/* <ul className="sub-menu">

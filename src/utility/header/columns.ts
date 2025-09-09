@@ -7,7 +7,7 @@ import { LinkAttr } from "@/types/data.types";
     },
     {
       name: "4 column Full width",
-      href: "/shop-full-width-col-4",
+      href: "/products",
     },
     {
       name: "5 column Full width",

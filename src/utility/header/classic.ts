@@ -19,7 +19,7 @@ const classic: LinkAttr[] = [
   },
   {
     name: "Full width 4 column",
-    href: "/shop-full-width-col-4",
+    href: "/products",
   },
 ];
 export default classic;

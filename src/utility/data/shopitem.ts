@@ -129,7 +129,7 @@ export const shopitem: Item[] = [
     status: "Out Of Stock",
   },
   {
-    title: "Fresh Organic Ginger Pack",
+    title: "Fresh Organic Ginger Packfnfh",
     sale: "",
     status: "Available",
     image: process.env.VITE_APP_URL + "/assets/img/product-images/17_1.jpg",
@@ -213,7 +213,7 @@ export const shopitem: Item[] = [
     status: "Available",
   },
   {
-    title: "Fresh Organic Ginger Pack",
+    title: "Fresh Organic Ginger Packmgghm",
     sale: "",
     image: process.env.VITE_APP_URL + "/assets/img/product-images/17_1.jpg",
     imageTwo:
