@@ -164,7 +164,7 @@ function HeaderTwo({ cartItems, wishlistItems }: any) {
                       <span className="gi-btn-title">Wishlist</span>
                       <span className="gi-btn-stitle">
                         <b className="gi-wishlist-count">
-                          {wishlistItems.length}
+                          {wishlistItems.length || 0}
                         </b>
                         -items
                       </span>

@@ -159,7 +159,7 @@ function HeaderOne({ cartItems, wishlistItems }: any) {
                       <span className="main-label-note-new"></span>
                     </div>
                     <span className="gi-header-count gi-cart-count">
-                      {cartItems.length}
+                      {cartItems.length || 0}
                     </span>
                   </Link>
                   {/* <!-- Header Cart End -->
