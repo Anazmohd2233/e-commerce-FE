@@ -35,7 +35,7 @@ function HeaderManu() {
               onSelect={(selectedIndex) => setSelectedIndex(selectedIndex)}
               className="gi-category-icon-block"
             >
-              <div className="gi-category-menu">
+              {/* <div className="gi-category-menu">
                 <div className="gi-category-toggle">
                   <i className="fi fi-rr-apps"></i>
                   <span className="text">All Categories</span>
@@ -44,7 +44,7 @@ function HeaderManu() {
                     aria-hidden="true"
                   ></i>
                 </div>
-              </div>
+              </div> */}
               <div className="gi-cat-dropdown">
                 <div className="gi-cat-block">
                   <div className="gi-cat-tab">
@@ -404,7 +404,7 @@ function HeaderManu() {
                             </li>
                           </ul>
                         </li>
-                        <li className="dropdown drop-list">
+                        {/* <li className="dropdown drop-list">
                           <Link to="#" className="dropdown-arrow">
                             Blog<i className="fi-rr-angle-small-right"></i>
                           </Link>
@@ -415,8 +415,8 @@ function HeaderManu() {
                               </li>
                             ))}
                           </ul>
-                        </li>
-                        <li className="dropdown drop-list">
+                        </li> */}
+                        {/* <li className="dropdown drop-list">
                           <Link to="#" className="dropdown-arrow">
                             Pages<i className="fi-rr-angle-small-right"></i>
                           </Link>
@@ -427,12 +427,18 @@ function HeaderManu() {
                               </li>
                             ))}
                           </ul>
+                        </li> */}
+
+                         <li className="non-drop">
+                          <Link to="/cart">
+                            <i className="fi-rr-badge-percent"></i>Cart
+                          </Link>
                         </li>
-                        <li className="non-drop">
+                        {/* <li className="non-drop">
                           <Link to="/banner-left-sidebar-col-3">
                             <i className="fi-rr-badge-percent"></i>Offers
                           </Link>
-                        </li>
+                        </li> */}
                       </ul>
                     </div>
                   </div>

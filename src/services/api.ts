@@ -19,7 +19,7 @@ apiClient.interceptors.request.use(
     // Get token from localStorage or Redux store
     const token = localStorage.getItem('authToken');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `${token}`;
     }
     return config;
   },
@@ -56,6 +56,9 @@ export const API_ENDPOINTS = {
   // User endpoints
   USER_PROFILE: '/user/profile',
   UPDATE_PROFILE: '/user/profile_update',
+
+    // CATEGORY endpoints
+  GET_CATEGORY: '/category/list/',
   
   // Cart endpoints
   CART_LIST: '/user/cart/list',

@@ -1,8 +1,22 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import initialData from '@/utility/data/categorysliderone';
 import { Category } from '@/types/data.types';
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import categoryService from "@/services/categoryService";
+
+// Async thunks for cart operations
+export const fetchCart = createAsyncThunk(
+  'cat/fetchCategory',
+  async (page: number = 1, { rejectWithValue }) => {
+    try {
+      const category = await categoryService.getCategoryList(page);
+      return category;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 
 interface InitialState {

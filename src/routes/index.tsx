@@ -154,7 +154,9 @@ const VendorDashboard = lazy(
 // minimal
 const Fashion = lazy(() => import("@/pages/minimal/fashion/page"));
 
-const FashionShopLeftSidebarCol3 = lazy(() => import("@/pages/minimal/fashion-shop-left-sidebar-col-3/page"));
+const FashionShopLeftSidebarCol3 = lazy(
+  () => import("@/pages/minimal/fashion-shop-left-sidebar-col-3/page")
+);
 
 // modern
 const FashionTwo = lazy(() => import("@/pages/modern/fashiontwo/page"));
